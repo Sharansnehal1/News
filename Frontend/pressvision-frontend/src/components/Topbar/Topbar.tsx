@@ -3,8 +3,9 @@ import React, { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 
+
 const Topbar: React.FC = () => {
-  const { user, logoutUser } = useContext(AuthContext)!;
+const { user, logoutUser } = useContext(AuthContext)!;
   const [showDropdown, setShowDropdown] = useState(false);
 
   return (
@@ -123,11 +124,11 @@ const Topbar: React.FC = () => {
                 ) : (
                   <div
                     className="ms-3 my-auto position-relative"
-                    onMouseEnter={() => setShowDropdown(true)}
-                    onMouseLeave={() => setShowDropdown(false)}
+                  onClick={() => setShowDropdown(!showDropdown)}
+
                     style={{ cursor: "pointer" }}
                   >
-                    <span className="fw-bold text-primary">{user.username}</span>
+                    <span className="fw-bold text-primary">{user?.username}</span>
 
                     {showDropdown && (
                       <div
@@ -137,12 +138,14 @@ const Topbar: React.FC = () => {
                         <Link to="/profile" className="dropdown-item p-2">
                           Profile
                         </Link>
-
+                        <Link to="/quiz" className="dropdown-item p-2">
+                          Quiz
+                        </Link>
                         <Link to="/settings" className="dropdown-item p-2">
                           Settings
                         </Link>
 
-                        <Link to="/notes" className="dropdown-item p-2">
+                        <Link to="/add-note" className="dropdown-item p-2">
                           Notes
                         </Link>
 
