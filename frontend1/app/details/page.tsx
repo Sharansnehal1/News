@@ -1,0 +1,239 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Article } from "@/types/article"; // your existing interface
+
+export default function Detailspage() {
+  const [article, setArticle] = useState<Article | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false); // Track speech state
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:1337/api/article-contents?populate=*")
+      .then((res) => {
+        const firstArticle = res.data.data?.[0] as Article;
+        console.log("First article:", firstArticle);
+        setArticle(firstArticle);
+      })
+      .catch((err) => console.error("API Error:", err));
+
+    // Stop speech on unmount / page navigation
+    return () => {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false); // reset button state
+    };
+  }, []);
+
+  if (!article)
+    return (
+      <p style={{ textAlign: "center", marginTop: "40px" }}>Loading...</p>
+    );
+
+  // Combine content blocks if present
+  const formattedContent = article.content
+    ?.map((block) =>
+      block.children?.map((child: { text: string }) => child.text).join(" ")
+    )
+    .join("\n\n");
+
+  // Main image URL
+  const mainImage =
+    article.image?.[0]?.url && `http://localhost:1337${article.image[0].url}`;
+
+  // --- Speech Function ---
+  const handleReadAloud = () => {
+    if (!article) return;
+
+    // If already speaking, stop
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    const textToRead = `
+      ${article.title}.
+      ${article.description}.
+      ${formattedContent || ""}
+    `;
+
+    const utterance = new SpeechSynthesisUtterance(textToRead);
+    utterance.rate = 1; // speed
+    utterance.pitch = 1; // pitch
+    utterance.lang = "en-US"; // language
+
+    utterance.onend = () => {
+      setIsSpeaking(false); // Reset button state when done
+    };
+
+    window.speechSynthesis.speak(utterance);
+    setIsSpeaking(true);
+  };
+
+  return (
+    <div>
+      <div className="about-area">
+        <div className="container">
+          {/* Trending Section */}
+          <div className="row">
+            <div className="col-lg-12">
+              <div className="trending-tittle d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>Trending now</strong>
+                  <p>{article.category}</p>
+                </div>
+                <button
+                  className="button button-primary"
+                  onClick={handleReadAloud}
+                  style={{ color: "#0d0c0cff" }} // Make text visible
+                >
+                  {isSpeaking ? "⏹ Stop" : "🔊 Read Aloud"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="row">
+            {/* LEFT CONTENT */}
+            <div className="col-lg-8">
+              <div className="about-right mb-90">
+                {/* Article Image */}
+                <div className="about-img">
+                  <img
+                    src={mainImage || "/assets/img/trending/trending_top.jpg"}
+                    alt={article.title}
+                  />
+                </div>
+
+                {/* Article Title */}
+                <div className="section-tittle mb-30 pt-30">
+                  <h3>{article.title}</h3>
+                </div>
+
+                {/* Article Description & Content */}
+                <div className="about-prea">
+                  <p className="about-pera1 mb-25">{article.description}</p>
+                  {formattedContent && (
+                    <p
+                      className="about-pera1 mb-25"
+                      style={{ whiteSpace: "pre-line" }}
+                    >
+                      {formattedContent}
+                    </p>
+                  )}
+                </div>
+
+                {/* Social Share */}
+                <div className="social-share pt-30">
+                  <div className="section-tittle">
+                    <h3 className="mr-20">Share:</h3>
+                    <ul>
+                      {["icon-ins", "icon-fb", "icon-tw", "icon-yo"].map(
+                        (icon, i) => (
+                          <li key={i}>
+                            <a href="#">
+                              <img
+                                src={`/assets/img/news/${icon}.png`}
+                                alt=""
+                              />
+                            </a>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Comment Form */}
+              <div className="row">
+                <div className="col-lg-8">
+                  <form
+                    className="form-contact contact_form mb-80"
+                    action="#"
+                    method="post"
+                  >
+                    <div className="row">
+                      <div className="col-12">
+                        <textarea
+                          className="form-control w-100"
+                          placeholder="Enter Message"
+                        ></textarea>
+                      </div>
+                      <div className="col-sm-6">
+                        <input
+                          className="form-control"
+                          type="text"
+                          placeholder="Enter your name"
+                        />
+                      </div>
+                      <div className="col-sm-6">
+                        <input
+                          className="form-control"
+                          type="email"
+                          placeholder="Email"
+                        />
+                      </div>
+                      <div className="col-12">
+                        <input
+                          className="form-control"
+                          type="text"
+                          placeholder="Enter Subject"
+                        />
+                      </div>
+                    </div>
+                    <div className="form-group mt-3">
+                      <button
+                        type="submit"
+                        className="button button-contactForm boxed-btn"
+                      >
+                        Send
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT SIDEBAR */}
+            <div className="col-lg-4">
+              <div className="section-tittle mb-40">
+                <h3>Follow Us</h3>
+              </div>
+
+              <div className="single-follow mb-45">
+                <div className="single-box">
+                  {["icon-fb", "icon-tw", "icon-ins", "icon-yo"].map(
+                    (icon, i) => (
+                      <div
+                        className="follow-us d-flex align-items-center"
+                        key={i}
+                      >
+                        <div className="follow-social">
+                          <a href="#">
+                            <img
+                              src={`/assets/img/news/${icon}.png`}
+                              alt=""
+                            />
+                          </a>
+                        </div>
+                        <div className="follow-count">
+                          <span>8,045</span>
+                          <p>Fans</p>
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div className="news-poster d-none d-lg-block">
+                <img src="/assets/img/news/news_card.jpg" alt="" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

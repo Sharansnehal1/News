@@ -20,4 +20,9 @@ const Note = sequelize.define("Note", {
   timestamps: true, // adds createdAt & updatedAt
 });
 
+
+ Note.associate = (models) => {
+    Note.belongsTo(models.User, { foreignKey: "userId" });
+    Note.belongsTo(models.News, { foreignKey: "newsId" });
+  };
 module.exports = Note;
