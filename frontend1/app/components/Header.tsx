@@ -1,4 +1,40 @@
+"use client";
+import "./Header.css";
+import { useEffect, useState } from "react";
 export default function Header() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
+    }
+  }, []);
+
+ const handleLogout = async () => {
+  try {
+    debugger;
+    const token = localStorage.getItem("token");
+
+    // Send logout request to backend
+    await fetch("http://localhost:5000/users/logout", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Clear token on frontend
+    localStorage.removeItem("token");
+
+    // Refresh UI
+    window.location.reload();
+  } catch (error) {
+    console.log("Logout error:", error);
+  }
+};
+
+
   return (
      <header>
         
@@ -80,7 +116,24 @@ export default function Header() {
                                             
                                         </form>
                                     </div>
+
+                                 
+
                                 </div>
+
+                       {isLoggedIn ? (
+                  <a
+                    href="#"
+                    className="header-login-btn"
+                    onClick={handleLogout}
+                  >
+                    <i className="fas fa-user"></i> Logout
+                  </a>
+                ) : (
+                  <a href="/login" className="header-login-btn">
+                    <i className="fas fa-user"></i> Login
+                  </a>
+                  )}
                             </div>
                          
                             <div className="col-12">

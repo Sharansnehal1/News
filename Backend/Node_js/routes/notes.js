@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Note = require("../models/Note");
+const auth = require("../middleware/auth");
 
 // GET all notes
 router.get("/", async (req, res) => {
@@ -14,11 +15,11 @@ router.get("/", async (req, res) => {
 });
 
 // SAVE a note
-router.post("/save-notes", async (req, res) => {
+router.post("/save-notes", auth,async (req, res) => {
     debugger
   try {
-    const { id,notes_text, canvas_image } = req.body;
-    const note = await Note.create({id, notes_text, canvas_image });
+    const { notes_text, canvas_image } = req.body;
+    const note = await Note.create({ notes_text, canvas_image, userId: req.userId });
     res.json({ success: true, data: note });
   } catch (error) {
     console.error(error);

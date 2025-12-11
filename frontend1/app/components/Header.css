@@ -1,0 +1,15 @@
+/* Add this at the bottom of your existing CSS file */
+.header-login-btn {
+  padding: 8px 18px;
+  border-radius: 25px;
+  background: linear-gradient(45deg, #4e8df5, #6cc1ff);
+  color: #fff !important;
+  font-weight: 600;
+  transition: 0.3s;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.header-login-btn:hover {
+  background: linear-gradient(45deg, #3a76e8, #58b1f7);
+  transform: translateY(-2px);
+}

@@ -71,9 +71,18 @@ export default function Home() {
     }
 
     try {
+          const token = localStorage.getItem("token");
+          debugger; 
       const response = await axios.post("http://localhost:5000/notes/save-notes", {
         notes_text: note,
         canvas_image: "",
+      },
+        {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // 🔥 IMPORTANT
+      },
+    
       });
 
       if (response.data.success) {

@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const tokenBlacklist = require("../utils/blacklist");
 
 const router = express.Router();
 const JWT_SECRET = "yourSecretKey"; // store in .env later
@@ -37,6 +38,14 @@ router.post("/login", async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
+});
+
+router.post("/logout", (req, res) => {
+  const token = req.headers["authorization"];
+  if (!token) return res.status(400).json({ message: "Token missing" });
+
+  tokenBlacklist.push(token);
+  res.json({ success: true, message: "Logged out successfully" });
 });
 
 module.exports = router;

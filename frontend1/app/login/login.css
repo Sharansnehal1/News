@@ -1,0 +1,161 @@
+/* Variables */
+:root {
+  --body-bg: #c1bdba;
+  --form-bg: #13232f;
+  --white: #ffffff;
+  --main: #1ab188;
+  --main-dark: #159971;
+  --gray-light: #a0b3b0;
+}
+
+/* Global Styles */
+body {
+  background: var(--body-bg);
+  font-family: 'Titillium Web', sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: var(--main);
+  transition: 0.5s ease;
+}
+a:hover {
+  color: var(--main-dark);
+}
+
+/* Form Container */
+.form {
+  background: rgba(19, 35, 47, 0.9);
+  padding: 40px;
+  max-width: 600px;
+  margin: 40px auto;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
+}
+
+/* Tabs */
+.tab-group {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 40px 0;
+  display: flex;
+  border-bottom: 1px solid rgba(160, 179, 176, 0.25);
+}
+
+.tab-group li {
+  flex: 1;
+}
+
+.tab-group button {
+  width: 100%;
+  padding: 15px 0;
+  background: rgba(160, 179, 176, 0.25);
+  border: none;
+  color: var(--gray-light);
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+.tab-group .active button {
+  background: var(--main);
+  color: var(--white);
+}
+.tab-group button:hover {
+  background: var(--main-dark);
+  color: var(--white);
+}
+
+/* Tab content */
+.tab-content > div {
+  display: block;
+}
+
+h1 {
+  text-align: center;
+  color: var(--white);
+  font-weight: 300;
+  margin: 0 0 40px;
+}
+
+/* Floating labels */
+.field-wrap {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.field-wrap label {
+  position: absolute;
+  top: 10px;
+  left: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 22px;
+  pointer-events: none;
+  transition: 0.25s ease all;
+}
+
+.field-wrap label.active {
+  top: -10px;
+  left: 0;
+  font-size: 14px;
+  color: var(--white);
+}
+
+.field-wrap label .req {
+  color: var(--main);
+  margin-left: 2px;
+}
+
+input, textarea {
+  font-size: 22px;
+  display: block;
+  width: 100%;
+  padding: 10px 10px;
+  background: none;
+  border: 1px solid var(--gray-light);
+  color: var(--white);
+  transition: border-color 0.25s ease;
+}
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--main);
+}
+
+.top-row {
+  display: flex;
+  gap: 4%;
+}
+.top-row > div {
+  flex: 1;
+}
+
+/* Buttons */
+.button {
+  display: block;
+  width: 100%;
+  padding: 15px 0;
+  font-size: 2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: var(--main);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+.button:hover, .button:focus {
+  background: var(--main-dark);
+}
+
+/* Forgot password */
+.forgot {
+  margin-top: -20px;
+  text-align: right;
+}
+.forgot a {
+  color: var(--gray-light);
+  font-size: 14px;
+}
+.forgot a:hover {
+  color: var(--main);
+}
