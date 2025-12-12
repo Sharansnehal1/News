@@ -3,6 +3,9 @@ const router = express.Router();
 const Note = require("../models/Note");
 const auth = require("../middleware/auth");
 
+
+
+
 // GET all notes
 router.get("/", async (req, res) => {
   try {
@@ -18,8 +21,11 @@ router.get("/", async (req, res) => {
 router.post("/save-notes", auth,async (req, res) => {
     debugger
   try {
-    const { notes_text, canvas_image } = req.body;
-    const note = await Note.create({ notes_text, canvas_image, userId: req.userId });
+    const { notes_text, canvas_image, articleId } = req.body;
+    if (!articleId) {
+      return res.status(400).json({ success: false, error: "articleId is required" });
+    }
+    const note = await Note.create({ notes_text, canvas_image, userId: req.userId,articleId });
     res.json({ success: true, data: note });
   } catch (error) {
     console.error(error);

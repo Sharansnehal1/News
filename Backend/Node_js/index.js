@@ -2,6 +2,7 @@ const express = require("express");//framework to build server
 const cors = require("cors");//connect frontend and backend
 const notesRouter = require("./routes/notes");
 const usersRoutes = require("./routes/users");
+const commentsRoutes = require("./routes/comments");
 
 const app = express();//initializes an express application
 app.use(cors());//Enables Cross-Origin Resource Sharing, so your frontend (e.g., React) can call your API.
@@ -11,5 +12,6 @@ debugger
 // Routes
 app.use("/notes", notesRouter);
 app.use("/users", usersRoutes);
+app.use("/comments", commentsRoutes);
 
 app.listen(5000, () => console.log("Server running on port 5000"));

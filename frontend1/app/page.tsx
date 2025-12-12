@@ -9,10 +9,12 @@ export default function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isNotesOpen, setIsNotesOpen] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [note, setNote] = useState(""); // track textarea value
 
   const toggleNotes = () => setIsNotesOpen(!isNotesOpen);
+  
 
   // Fetch articles
   useEffect(() => {
@@ -59,7 +61,10 @@ export default function Home() {
   if (!articles || articles.length === 0) {
     return <p className="text-center mt-20 text-gray-500 text-xl">No articles found</p>;
   }
-
+ const openNotesFor = (article: Article) => {
+    setSelectedArticle(article);
+    setIsNotesOpen(true);
+  };
   const featured = articles[0]; // Main headline article
   const others = articles.slice(1);
 
@@ -69,13 +74,14 @@ export default function Home() {
       alert("Note cannot be empty");
       return;
     }
-
+if (!selectedArticle) return alert("No article selected");
     try {
           const token = localStorage.getItem("token");
           debugger; 
       const response = await axios.post("http://localhost:5000/notes/save-notes", {
         notes_text: note,
         canvas_image: "",
+        articleId: selectedArticle.id, // Pass the current article's ID
       },
         {
       headers: {
@@ -115,94 +121,118 @@ export default function Home() {
         <div className="container">
           <div className="trending-main flex">
             {/* Trending Articles */}
-            <div className="w-full lg:w-3/4">
-              {/* Trending top */}
-              <div className="trending-top mb-30">
-                <div className="trend-top-img">
-                  {featured.image?.[0]?.url && (
-                    <img
-                      src={`http://localhost:1337${featured.image[0].url}`}
-                      alt={featured.title}
-                      className="w-full h-[400px] object-cover rounded shadow"
-                    />
-                  )}
-                  <div className="trend-top-cap">
-                    <span>Appetizers</span>
-                    <h2>
-                      <a href="/details">{featured.title}</a>
-                    </h2>
-                  </div>
-                </div>
-              </div>
+           
 
-              {/* Trending bottom - Other articles */}
-              <div className="trending-bottom grid grid-cols-1 md:grid-cols-2 gap-4">
-                {others.map((article) => (
-                  <div key={article.id} className="border rounded p-2 shadow">
-                    {article.image?.[0]?.url && (
+            {/* Notes Sidebar */}
+           <div className="flex">
+      {/* --------------------- LEFT COLUMN (NEWS) -------------------- */}
+      <div className="w-3/4 p-4">
+
+        {/* Featured Article */}
+        <div className="p-4 border rounded mb-4 shadow bg-white">
+            <h3 className="mt-2 font-semibold text-gray-800">
+                      <a href="/details">{featured.title}</a>
+                    </h3>
+         
+            {featured.image?.[0]?.url && (
+                      <img
+                        src={`http://localhost:1337${featured.image[0].url}`}
+                        alt={featured.title}
+                        className="w-full h-40 object-cover rounded"
+                      />
+                    )}
+          <button
+            onClick={() => openNotesFor(featured)}
+            className="mt-3 bg-blue-600 text-white px-3 py-2 rounded"
+          >
+            Take Notes
+          </button>
+        </div>
+
+        {/* Other Articles */}
+        {others.map((article) => (
+          <div
+            key={article.id}
+            className="p-4 border rounded mb-3 shadow-sm bg-white"
+          >
+              <h3 className="mt-2 font-semibold">
+                      <a href="/details">{article.title}</a>
+                    </h3>
+{article.image?.[0]?.url && (
                       <img
                         src={`http://localhost:1337${article.image[0].url}`}
                         alt={article.title}
                         className="w-full h-40 object-cover rounded"
                       />
                     )}
-                    <h3 className="mt-2 font-semibold">
-                      <a href="/details">{article.title}</a>
-                    </h3>
-                    <p className="text-gray-600 text-sm mt-1">{article.description}</p>
-                  </div>
-                ))}
-              </div>
+            <button
+              onClick={() => openNotesFor(article)}
+              className="mt-3 bg-blue-600 text-white px-3 py-1 rounded"
+            >
+              Take Notes
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* --------------------- RIGHT SIDEBAR (NOTES) -------------------- */}
+      <div className="w-1/4 relative">
+        <div
+          ref={sidebarRef}
+          className={`fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 z-50 ${
+            isNotesOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          {/* Header */}
+          <div className="flex justify-between items-center p-4 border-b">
+            <h3 className="font-semibold">Your Notes</h3>
+            <button
+              onClick={toggleNotes}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              ➜
+            </button>
+          </div>
+
+          {/* Selected Article Title */}
+          {selectedArticle && (
+            <div className="p-4 border-b bg-gray-50">
+              <h4 className="text-xs text-gray-600">Notes for:</h4>
+              <p className="font-semibold text-sm mt-1">
+                {selectedArticle.title}
+              </p>
             </div>
+          )}
 
-            {/* Notes Sidebar */}
-            <div className="w-1/4 relative">
-              <div
-                ref={sidebarRef}
-                className={`fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 z-50 ${
-                  isNotesOpen ? "translate-x-0" : "translate-x-full"
-                }`}
-              >
-                {/* Header with close arrow */}
-                <div className="flex justify-between items-center p-4 border-b">
-                  <h3 className="font-semibold">Your Notes</h3>
-                  <button
-                    onClick={toggleNotes}
-                    className="text-gray-600 hover:text-gray-900"
-                  >
-                    &#8594;
-                  </button>
-                </div>
-                {/* Notes content */}
-                <div className="p-4">
-                 <textarea
-  placeholder="Write your notes here..."
-  className="w-full h-[300px] border rounded p-2 resize-none focus:outline-none"
-  value={note}                  // bind textarea value to state
-  onChange={(e) => setNote(e.target.value)} // update state on typing
-></textarea>
+          {/* Notes Input */}
+          <div className="p-4">
+            <textarea
+              placeholder="Write your notes here..."
+              className="w-full h-[300px] border rounded p-2 resize-none"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            ></textarea>
 
+            <button
+              onClick={saveNote}
+              className="mt-2 bg-blue-600 text-white p-2 rounded w-full"
+            >
+              Save Note
+            </button>
+          </div>
+        </div>
 
-                        {/* Submit / Save Button */}
-      <button
-        onClick={saveNote} // call your save function here
-        className="mt-2 bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-      >
-        Save Note
-      </button>
-                </div>
-              </div>
-
-              {/* Toggle button */}
-              {!isNotesOpen && (
-                <button
-                  onClick={toggleNotes}
-                  className="fixed top-1/2 right-0 bg-blue-600 text-white p-2 rounded-l shadow-lg z-40"
-                >
-                  Notes
-                </button>
-              )}
-            </div>
+        {/* Toggle Button */}
+        {!isNotesOpen && (
+          <button
+            onClick={toggleNotes}
+            className="fixed top-1/2 right-0 bg-blue-600 text-white p-2 rounded-l shadow-lg z-40"
+          >
+            Notes
+          </button>
+        )}
+      </div>
+    </div>
           </div>
         </div>
       </div>

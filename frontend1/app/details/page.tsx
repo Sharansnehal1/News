@@ -6,6 +6,38 @@ import { Article } from "@/types/article"; // your existing interface
 export default function Detailspage() {
   const [article, setArticle] = useState<Article | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false); // Track speech state
+   const [comment, setComment] = useState("");
+  const [Name, setName] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem("token");
+      debugger;
+      const res = await axios.post(
+        "http://localhost:5000/comments/save-comment",
+        {
+          comment,
+          Name
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+console.log("Comment submission response:", res);
+      if (res.data.success) {
+        alert("Comment submitted");
+        setComment("");
+        setName("");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to submit comment");
+    }
+  };
 
   useEffect(() => {
     axios
@@ -69,6 +101,8 @@ export default function Detailspage() {
     window.speechSynthesis.speak(utterance);
     setIsSpeaking(true);
   };
+
+  
 
   return (
     <div>
@@ -151,23 +185,28 @@ export default function Detailspage() {
                   <form
                     className="form-contact contact_form mb-80"
                     action="#"
-                    method="post"
+                    method="post" onSubmit={handleSubmit}
                   >
                     <div className="row">
                       <div className="col-12">
                         <textarea
                           className="form-control w-100"
-                          placeholder="Enter Message"
-                        ></textarea>
+                          placeholder="Enter Comment"
+                        
+                          value={comment} onChange={(e) => setComment(e.target.value)}>
+                        </textarea>
+                        
                       </div>
                       <div className="col-sm-6">
                         <input
                           className="form-control"
                           type="text"
                           placeholder="Enter your name"
+                           value={Name}
+            onChange={(e) => setName(e.target.value)}
                         />
                       </div>
-                      <div className="col-sm-6">
+                      {/* <div className="col-sm-6">
                         <input
                           className="form-control"
                           type="email"
@@ -180,7 +219,7 @@ export default function Detailspage() {
                           type="text"
                           placeholder="Enter Subject"
                         />
-                      </div>
+                      </div> */}
                     </div>
                     <div className="form-group mt-3">
                       <button
