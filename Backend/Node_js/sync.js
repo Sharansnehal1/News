@@ -1,5 +1,9 @@
 const sequelize = require("./db");
 const Note = require("./models/Note");
+const readlist = require("./models/readList");
+const Report = require("./models/Report");
+require("./models/ReadLater");
+
 
 (async () => {
   try {
@@ -10,4 +14,7 @@ const Note = require("./models/Note");
     console.error(err);
     process.exit(1);
   }
+  
 })();
+
+
