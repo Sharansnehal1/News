@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import "./page.css";
+
 import axios from "axios";
 import { Article } from "@/types/article"; // your existing interface
 
@@ -8,6 +10,7 @@ export default function Detailspage() {
   const [isSpeaking, setIsSpeaking] = useState(false); // Track speech state
    const [comment, setComment] = useState("");
   const [Name, setName] = useState("");
+    const [open, setOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -114,7 +117,67 @@ console.log("Comment submission response:", res);
               <div className="trending-tittle d-flex justify-content-between align-items-center">
                 <div>
                   <strong>Trending now</strong>
-                  <p>{article.category}</p>
+                  <p>{article.category}</p><br/>
+<div className="author-hover">
+  <p className="author-name">Author : {article.author}</p>
+
+  {/* Hover Card */}
+  <div className="author-card">
+    {article.ProfilePhoto?.[0]?.url && (
+      <img
+        src={`http://localhost:1337${article.ProfilePhoto[0].url}`}
+        alt={article.author}
+        className="author-card-img"
+         onClick={() => setOpen(true)}
+      />
+    )}
+
+    <div className="author-card-info">
+      <h4>{article.author}</h4>
+      <p>{article.designation} , {article.location}</p>
+      
+      
+    </div>
+  </div>
+</div>
+
+<br/>
+ {/* Popup Modal */}
+      {open && (
+        <div className="author-modal-overlay" onClick={() => setOpen(false)}>
+          <div
+            className="author-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="close-btn" 
+              onClick={() => setOpen(false)}
+            >
+              ✕
+            </button>
+
+            <img
+              src={`http://localhost:1337${article.ProfilePhoto?.[0]?.url}`}
+              alt={article.author}
+              className="author-modal-img"
+            />
+
+            <h3>{article.author}</h3>
+            <p className="author-about">
+             {article.About}
+            </p>
+          </div>
+        </div>
+      )}
+
+                  <p>
+  Created  at:{" "}
+  {new Date(article.createdAt).toLocaleString("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  })}
+</p>
+
                 </div>
                 <button
                   className="button button-primary"
@@ -162,19 +225,40 @@ console.log("Comment submission response:", res);
                   <div className="section-tittle">
                     <h3 className="mr-20">Share:</h3>
                     <ul>
-                      {["icon-ins", "icon-fb", "icon-tw", "icon-yo"].map(
-                        (icon, i) => (
-                          <li key={i}>
-                            <a href="#">
-                              <img
-                                src={`/assets/img/news/${icon}.png`}
-                                alt=""
-                              />
-                            </a>
-                          </li>
-                        )
-                      )}
-                    </ul>
+                   <li>
+        <a
+          href={`https://www.instagram.com/`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src="/assets/img/news/icon-ins.png" alt="Instagram" />
+        </a>
+      </li>
+
+       {/* Facebook */}
+      <li>
+        <a
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+            window.location.href
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src="/assets/img/news/icon-fb.png" alt="Facebook" />
+        </a>
+      </li>
+
+       {/* YouTube */}
+      <li>
+        <a
+          href="https://www.youtube.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src="/assets/img/news/icon-yo.png" alt="YouTube" />
+        </a>
+      </li>
+      </ul>
                   </div>
                 </div>
               </div>
